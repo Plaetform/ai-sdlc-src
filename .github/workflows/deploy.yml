@@ -1,0 +1,100 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  # Silence Node 20 action-runtime deprecation annotation on every run.
+  # See github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    strategy:
+      matrix:
+        include:
+          - service_name: "web"
+            path: "."
+            container_app_name: "ca-app-ai-sdlc-df50b1-web"
+            dns_name: "ai-sdlc"
+            image_name: "prd-ai-sdlc-web"
+            cache_ref_suffix: "nextjs-minimal-frontend"
+          - service_name: "api"
+            path: "backend"
+            container_app_name: "ca-app-ai-sdlc-df50b1-api"
+            dns_name: "ai-sdlc-api"
+            image_name: "prd-ai-sdlc-api"
+            cache_ref_suffix: "dotnet-minimal-api-backend"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login
+        id: azure_login
+        uses: azure/login@v2
+        if: github.ref == 'refs/heads/main'
+        continue-on-error: true
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Wait for Azure RBAC propagation
+        if: github.ref == 'refs/heads/main' && steps.azure_login.outcome == 'failure'
+        run: sleep 60
+
+      - name: Azure login retry
+        if: github.ref == 'refs/heads/main' && steps.azure_login.outcome == 'failure'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set image tag
+        id: tag
+        if: github.ref == 'refs/heads/main'
+        run: echo "tag=${{ secrets.ACR_REGISTRY }}/${{ matrix.image_name }}:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        if: github.ref == 'refs/heads/main'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push image
+        if: github.ref == 'refs/heads/main'
+        working-directory: ${{ matrix.path }}
+        run: |
+          # Cache-from points at the per-env, per-template buildcache tag the
+          # cache-warmup workflow in dx-connect-plaetform-templates writes
+          # daily. Generated apps are --cache-from only (never --cache-to) to
+          # avoid concurrent-write races. When cache_ref_suffix is empty
+          # (template not in the warmed set), buildx falls back to a cold build.
+          ACR_REGISTRY="${{ secrets.ACR_REGISTRY }}"
+          ACR_NAME="${ACR_REGISTRY%.azurecr.io}"
+          az acr login --name "$ACR_NAME"
+          CACHE_ARGS=""
+          if [ -n "${{ matrix.cache_ref_suffix }}" ]; then
+            CACHE_ARGS="--cache-from=type=registry,ref=$ACR_REGISTRY/cache/${{ matrix.cache_ref_suffix }}:buildcache"
+          fi
+          docker buildx build $CACHE_ARGS -t "${{ steps.tag.outputs.tag }}" --push .
+
+      - name: Build image (PR validation)
+        if: github.ref != 'refs/heads/main'
+        working-directory: ${{ matrix.path }}
+        run: docker build .
+
+      - name: Deploy to Container Apps
+        if: github.ref == 'refs/heads/main'
+        run: |
+          az containerapp update \
+            --name "${{ matrix.container_app_name }}" \
+            --resource-group "${{ secrets.RESOURCE_GROUP }}" \
+            --image "${{ steps.tag.outputs.tag }}"
