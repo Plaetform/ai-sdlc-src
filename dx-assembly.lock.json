@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "generated_at_unix": 1781871897,
+  "components": [
+    {
+      "id": "nextjs-minimal",
+      "kind": "frontend",
+      "repo_url": "https://github.com/Plaetform/platform-templates",
+      "ref": "main",
+      "template_path": "nextjs-minimal",
+      "mount_path": "",
+      "renderer_id": "passthrough",
+      "renderer_version": "1.0.0"
+    },
+    {
+      "id": "dotnet-minimal-api",
+      "kind": "backend",
+      "repo_url": "https://github.com/Plaetform/platform-templates",
+      "ref": "main",
+      "template_path": "dotnet-minimal-api",
+      "mount_path": "backend",
+      "renderer_id": "passthrough",
+      "renderer_version": "1.0.0"
+    }
+  ],
+  "hooks_executed": []
+}

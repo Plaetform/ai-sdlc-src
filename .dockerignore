@@ -1,0 +1,26 @@
+.git
+.github
+.gitignore
+.gitattributes
+node_modules
+.next
+out
+build
+dist
+coverage
+# Sibling backend service (mounted at backend/ when paired) — never part of
+# the frontend image, and excluding it keeps a TypeScript backend's sources
+# out of the frontend's `next build` typecheck.
+backend
+.dockerignore
+Dockerfile
+.env
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+.idea
+.vscode
+README.md

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Application Insights — picks up APPLICATIONINSIGHTS_CONNECTION_STRING
+         from the Container App env and reports requests/dependencies/CPU. -->
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
+    <!-- Azure OpenAI / AI Foundry — active when the ai-foundry component is
+         selected. Uses Managed Identity (no keys); kiosk injects
+         AI_FOUNDRY_ENDPOINT / AI_DEPLOYMENT_NAME / AI_MODEL. -->
+    <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
+    <PackageReference Include="Azure.Identity" Version="1.13.1" />
+  </ItemGroup>
+</Project>
