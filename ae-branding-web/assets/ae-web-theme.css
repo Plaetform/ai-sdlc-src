@@ -1,0 +1,76 @@
+:root {
+  --ae-black: #000000;
+  --ae-white: #ffffff;
+  --ae-orange: #ff8c00;
+  --ae-red: #ff4b28;
+  --ae-grey-1: #faf7f7;
+  --ae-grey-2: #e8e3e1;
+  --ae-grey-3: #beb9b4;
+  --ae-grey-4: #969391;
+  --ae-grey-5: #7a7674;
+  --ae-grey-6: #484644;
+  --ae-yellow: #ffbf09;
+  --ae-pink: #d20046;
+  --ae-dark-red: #71012e;
+
+  --ae-gradient: linear-gradient(135deg, var(--ae-orange) 0%, var(--ae-red) 100%);
+  --ae-font-brand: "Nexa", "Century Gothic", "Avenir Next", "Montserrat", Arial, sans-serif;
+  --ae-radius-sm: 4px;
+  --ae-radius-md: 8px;
+  --ae-focus-ring: 0 0 0 3px rgba(255, 140, 0, 0.35);
+}
+
+body {
+  color: var(--ae-black);
+  background: var(--ae-white);
+  font-family: var(--ae-font-brand);
+}
+
+a {
+  color: var(--ae-red);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--ae-focus-ring);
+}
+
+.ae-surface {
+  background: var(--ae-grey-1);
+  color: var(--ae-black);
+}
+
+.ae-button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: var(--ae-radius-sm);
+  padding: 0.75rem 1rem;
+  color: var(--ae-white);
+  background: var(--ae-gradient);
+  font-family: var(--ae-font-brand);
+  font-weight: 700;
+}
+
+.ae-button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  border: 1px solid var(--ae-black);
+  border-radius: var(--ae-radius-sm);
+  padding: 0.75rem 1rem;
+  color: var(--ae-black);
+  background: var(--ae-white);
+  font-family: var(--ae-font-brand);
+  font-weight: 700;
+}
+
+.ae-logo {
+  display: block;
+  min-width: 40px;
+}

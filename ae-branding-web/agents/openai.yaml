@@ -1,0 +1,4 @@
+interface:
+  display_name: "AE Branding Web"
+  short_description: "Keep web UIs compliant with AE brand"
+  default_prompt: "Use $ae-branding-web to review and adjust this web UI for AE brand compliance."
