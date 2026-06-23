@@ -258,7 +258,7 @@
   .fz-desc b{color:var(--ink-2); font-weight:600}
   .ctrl.active{border-color:var(--warm); color:var(--red); background:rgba(255,140,0,.06)}
 
-  /* ===== Plumbing Section (Pipelines) ===== */
+  /* ===== Plumbing Section (Interactive Flowchart) ===== */
   .plumbing {
     position: relative;
     z-index: 2;
@@ -267,191 +267,444 @@
     max-height: 0;
     opacity: 0;
     transition: max-height .6s cubic-bezier(.4, 0, .2, 1), opacity .4s ease, margin .4s ease;
+    background: var(--bg);
+    border-top: 1px solid var(--line);
   }
   body.show-plumbing .plumbing {
-    max-height: 720px;
+    max-height: 1400px;
     opacity: 1;
     margin-top: 12px;
   }
-  .plumb-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-    margin-top: 6px;
-  }
-  .plumb-icon {
-    width: 18px;
-    height: 18px;
-    border-radius: 3px;
-    background: linear-gradient(135deg, var(--red), var(--deep));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: none;
-  }
-  .plumb-icon svg {
-    width: 11px;
-    height: 11px;
-    fill: #fff;
-  }
-  .plumb-name {
-    font-family: var(--disp);
-    font-weight: 800;
-    font-size: 14px;
-    color: var(--ink);
-    letter-spacing: -.01em;
-  }
-  .plumb-sep {
-    width: 1px;
-    height: 16px;
-    background: var(--line);
-    flex: none;
-  }
-  .plumb-tagline {
-    font-size: 12px;
-    color: var(--muted);
-    font-weight: 500;
-  }
-  .plumb-pipelines {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .plumb-row {
-    display: flex;
-    align-items: center;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    background: var(--bg-soft);
-    padding: 12px 16px;
-    position: relative;
+
+  /* Fullscreen Plumbing */
+  body.plumbing-fullscreen {
     overflow: hidden;
-    gap: 16px;
   }
-  .plumb-row-header {
-    flex: 0 0 160px;
+  body.plumbing-fullscreen .plumbing {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    max-height: none !important;
+    height: 100vh;
+    opacity: 1;
+    margin: 0;
+    padding: 20px;
+    background: var(--bg);
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    z-index: 3;
-    background: var(--bg-soft);
-    padding-right: 10px;
-    border-right: 1px solid var(--line);
+    border-top: none;
   }
-  .plumb-row-title {
-    font-family: var(--disp);
-    font-weight: 800;
-    font-size: 12px;
-    letter-spacing: .02em;
-    text-transform: uppercase;
-    color: var(--ink);
-  }
-  .plumb-row-subtitle {
-    font-size: 10.5px;
-    color: var(--muted);
-    font-weight: 500;
-  }
-  .plumb-flow {
+  body.plumbing-fullscreen .plumb-board-viewport {
     flex: 1;
+    height: auto;
+  }
+  body.plumbing-fullscreen .fs-enter-icon { display: none !important; }
+  body.plumbing-fullscreen .fs-exit-icon { display: inline !important; }
+  body.plumbing-fullscreen .fs-enter-text { display: none !important; }
+  body.plumbing-fullscreen .fs-exit-text { display: inline-flex !important; }
+
+  /* Control bar */
+  .plumb-control-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: relative;
-    padding: 6px 0;
-    min-height: 48px;
-  }
-  .plumb-pipe-line {
-    position: absolute;
-    left: 20px;
-    right: 20px;
-    top: 50%;
-    height: 2px;
-    background: repeating-linear-gradient(90deg, var(--line) 0 4px, transparent 4px 8px);
-    z-index: 1;
-  }
-  .plumb-flow-pulse {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--flow-color, var(--red));
-    box-shadow: 0 0 8px var(--flow-color, var(--red));
-    transform: translateY(-50%);
-    z-index: 2;
-    animation: flowPulse 7s linear infinite;
-  }
-  .row-spec { --flow-color: var(--slate); }
-  .row-plan { --flow-color: var(--warm); }
-  .row-verify { --flow-color: var(--red); }
-  .row-exec { --flow-color: var(--deep); }
-  
-  .row-plan .plumb-flow-pulse { animation-delay: -1.5s; animation-duration: 8s; }
-  .row-verify .plumb-flow-pulse { animation-delay: -3s; animation-duration: 6s; }
-  .row-exec .plumb-flow-pulse { animation-delay: -4.5s; animation-duration: 9s; }
-
-  @keyframes flowPulse {
-    0% { left: 2%; }
-    100% { left: 98%; }
-  }
-
-  .plumb-node {
-    position: relative;
-    z-index: 3;
-    background: var(--bg);
+    padding: 10px 16px;
+    background: var(--bg-soft);
     border: 1px solid var(--line);
-    border-radius: 4px;
-    padding: 6px 10px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .plumb-controls-group {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 10px;
-    font-weight: 700;
-    box-shadow: 0 2px 5px rgba(0,0,0,.03), 0 1px 0 rgba(0,0,0,.01);
-    transition: transform .22s cubic-bezier(.2,.8,.2,1), border-color .22s, box-shadow .22s;
-    max-width: 140px;
-    text-align: center;
+    gap: 12px;
   }
-  .plumb-node:hover {
-    transform: translateY(-3px);
-    border-color: var(--node-color, var(--red));
-    box-shadow: 0 6px 12px -4px rgba(0,0,0,.15), 0 0 0 1px var(--node-color, var(--red));
-  }
-  .p-human {
-    --node-color: #22c55e;
-    border-left: 3px solid #22c55e;
-  }
-  .p-ai {
-    --node-color: var(--warm);
-    border-left: 3px solid var(--warm);
-    background: linear-gradient(to right, rgba(255, 140, 0, 0.02), #fff);
-  }
-  .p-tool {
-    --node-color: var(--slate);
-    border-left: 3px solid var(--slate);
-    font-family: var(--mono);
-    font-size: 9px;
-  }
-  .p-status {
-    --node-color: var(--deep);
-    border-left: 3px solid var(--deep);
-    background: linear-gradient(to right, rgba(113, 1, 46, 0.02), #fff);
-  }
-  .p-icon {
-    width: 11px;
-    height: 11px;
+  
+  /* Toggle Switch */
+  .plumb-switch-label {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    flex: none;
-    color: var(--node-color, var(--ink-2));
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-2);
+    cursor: pointer;
+    user-select: none;
   }
-  .p-icon svg {
-    width: 100%;
-    height: 100%;
+  .plumb-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+  }
+  .plumb-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .plumb-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: var(--line);
+    border-radius: 20px;
+    transition: .3s;
+  }
+  .plumb-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: .3s;
+  }
+  .plumb-switch input:checked + .plumb-slider {
+    background-color: var(--warm);
+  }
+  .plumb-switch input:checked + .plumb-slider:before {
+    transform: translateX(16px);
+  }
+
+  /* Stepper */
+  .plumb-stepper {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    border-radius: 30px;
+    padding: 2px 4px;
+  }
+  .plumb-btn {
+    border: none;
+    background: transparent;
+    padding: 6px 12px;
+    font-family: var(--disp);
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--ink-2);
+    cursor: pointer;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: background .2s, color .2s;
+  }
+  .plumb-btn:hover {
+    background: var(--bg-soft);
+    color: var(--red);
+  }
+  .plumb-btn.active {
+    background: var(--warm-glow);
+    color: var(--red);
+  }
+  #plumbWalk .when-playing { display: none; }
+  #plumbWalk .when-paused { display: inline; }
+  #plumbWalk.walking-active .when-playing { display: inline; }
+  #plumbWalk.walking-active .when-paused { display: none; }
+  .plumb-stepper-sep {
+    width: 1px;
+    height: 16px;
+    background: var(--line);
+    margin: 0 4px;
+  }
+  .plumb-step-display {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-2);
+    min-width: 150px;
+    text-align: center;
+  }
+
+  /* Board & Canvas */
+  .plumb-board-viewport {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg-soft);
+    overflow: auto;
+    height: 660px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .plumb-board {
+    position: relative;
+    width: 1000px;
+    height: 980px;
+    background: #ffffff;
+    background-image: radial-gradient(rgba(122, 118, 116, 0.15) 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+    flex: none;
+    transform-origin: top center;
+    transition: transform 0.2s ease-out;
+  }
+
+  /* Flow Elements */
+  .fn-node {
+    position: absolute;
+    z-index: 10;
+    transition: transform .22s cubic-bezier(.2,.8,.2,1), border-color .22s, box-shadow .22s, opacity .3s;
+    user-select: none;
+  }
+  
+  /* Rectangle Node */
+  .fn-rect {
+    border: 2px solid var(--node-color);
+    border-radius: 6px;
+    background: #ffffff;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 6px rgba(0,0,0,.04);
+  }
+  .fn-rect-header {
+    font-family: var(--mono);
+    font-size: 8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: .06em;
+    font-weight: 600;
+  }
+  .fn-rect-title {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--ink);
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  /* Diamond Node */
+  .fn-node.fn-diamond {
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+    filter: drop-shadow(0 3px 5px rgba(0,0,0,.04));
+    transition: transform .22s cubic-bezier(.2,.8,.2,1), filter .22s, opacity .3s;
+  }
+  .fn-node.fn-diamond:hover {
+    box-shadow: none !important;
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,.12));
+  }
+  .fn-node.fn-diamond.active-step {
+    box-shadow: none !important;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,.15));
+  }
+  .fn-diamond {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fn-diamond-bg {
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--node-color);
+    border-radius: 4px;
+    transform: rotate(45deg);
+    background: #ffffff;
+    box-shadow: none !important;
+    transition: border-color .22s, background .22s, border-width .22s;
+  }
+  .fn-diamond-text {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    font-size: 8px;
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  /* Actor Node */
+  .fn-actor {
+    border: 2px solid var(--node-color);
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 2px 5px rgba(0,0,0,.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--node-color);
+  }
+  .fn-actor svg {
+    width: 14px;
+    height: 14px;
     fill: currentColor;
+  }
+  .fn-actor-text {
+    font-size: 7px;
+    font-weight: 800;
+    color: var(--muted);
+    margin-top: 1px;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+  }
+
+  /* Dashed Node */
+  .fn-dashed {
+    border: 2px dashed var(--node-color);
+    border-radius: 6px;
+    background: #ffffff;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,.02);
+  }
+
+  /* Hover & Active States */
+  .fn-node:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px -4px rgba(0,0,0,.12);
+    z-index: 20;
+  }
+  .fn-rect:hover {
+    border-color: var(--node-color);
+    background: rgba(var(--accent-rgb, 122,118,116), 0.02);
+  }
+  .fn-diamond:hover .fn-diamond-bg {
+    border-color: var(--node-color);
+    background: rgba(255, 140, 0, 0.02);
+  }
+  .fn-actor:hover {
+    background: rgba(255, 191, 9, 0.04);
+  }
+
+  /* Highlighting Step */
+  .fn-node.active-step {
+    transform: scale(1.08);
+    box-shadow: 0 10px 20px -5px rgba(0,0,0,.15);
+    z-index: 21;
+    border-width: 3px;
+  }
+  .fn-diamond.active-step .fn-diamond-bg {
+    border-width: 3px;
+    background: rgba(255, 140, 0, 0.05);
+    box-shadow: none !important;
+  }
+  .fn-node.dimmed {
+    opacity: 0.35;
+  }
+
+  /* Hide human gates toggling */
+  body.hide-plumb-gates .fn-gate,
+  body.hide-plumb-gates .fn-actor,
+  body.hide-plumb-gates .gate-line {
+    opacity: 0 !important;
+    pointer-events: none;
+  }
+
+  /* Node Colors */
+  .color-slate { --node-color: var(--slate); --accent-rgb: 122,118,116; }
+  .color-warm { --node-color: var(--warm); --accent-rgb: 255,140,0; }
+  .color-red { --node-color: var(--red); --accent-rgb: 255,75,40; }
+  .color-deep { --node-color: var(--deep); --accent-rgb: 113,1,46; }
+  .color-gold { --node-color: var(--signal); --accent-rgb: 255,191,9; }
+  .color-blue { --node-color: #1e3a8a; --accent-rgb: 30,58,138; }
+  .color-green { --node-color: #22c55e; --accent-rgb: 34,197,94; }
+
+  /* SVG Connections Overlay */
+  .plumb-svg {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .pipe-path {
+    stroke: var(--line);
+    stroke-width: 2.2;
+    fill: none;
+    transition: stroke 0.3s, stroke-width 0.3s;
+  }
+  .gate-line {
+    stroke: var(--line);
+    stroke-width: 1.5;
+    stroke-dasharray: 4, 3;
+    fill: none;
+    transition: opacity 0.3s;
+  }
+  
+  /* Active Pipeline flows */
+  .pipe-path.active {
+    stroke: var(--path-color, var(--slate));
+    stroke-width: 3;
+    stroke-dasharray: 8, 4;
+    animation: pipeDash 0.8s linear infinite;
+  }
+  .pipe-path.highlighted {
+    stroke: var(--path-color, var(--slate));
+    stroke-width: 3;
+  }
+
+  @keyframes pipeDash {
+    to { stroke-dashoffset: -24; }
+  }
+
+  /* Flowchart Workspace Layout */
+  .plumb-workspace {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+    height: 660px;
+  }
+  body.plumbing-fullscreen .plumb-workspace {
+    flex: 1;
+    height: auto;
+  }
+  .plumb-side-panel {
+    width: 340px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .plumb-desc-card-side {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.04);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.3s, border-top-color 0.3s;
+    border-top: 4px solid var(--line);
+  }
+  .plumb-desc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 6px;
+  }
+  .plumb-desc-step {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--red);
+    text-transform: uppercase;
+  }
+  .plumb-desc-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .plumb-desc-text {
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: var(--ink-2);
+    font-weight: 500;
   }
 
   /* ---------- footer ---------- */
@@ -707,171 +960,253 @@ BR-01 Member changes address</div>
 
     <!-- Plumbing / Process pipelines -->
     <div class="plumbing" id="plumbing">
-      <div class="plumb-header">
-        <div class="plumb-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+      
+      <!-- Control Bar -->
+      <div class="plumb-control-bar">
+        <div class="plumb-controls-group" style="width: 150px; flex-shrink: 0;">
+          <label class="plumb-switch-label">
+            <span class="plumb-switch">
+              <input type="checkbox" id="plumbGatesToggle" checked>
+              <span class="plumb-slider"></span>
+            </span>
+            <span data-nl="Human Gates" data-en="Human Gates">Human Gates</span>
+          </label>
         </div>
-        <span class="plumb-name" data-nl="SDLC Pipelines" data-en="SDLC Pipelines">SDLC Pipelines</span>
-        <div class="plumb-sep"></div>
-        <span class="plumb-tagline" data-nl="De technische details van het geautomatiseerde proces (the plumbing)" data-en="The technical details of the automated process (the plumbing)">The technical details of the automated process (the plumbing)</span>
+
+        <div class="plumb-controls-group" style="width: 100px; justify-content: center; flex-shrink: 0;">
+          <div class="plumb-stepper">
+            <button class="plumb-btn" id="plumbPrev" aria-label="Previous step">◂</button>
+            <div class="plumb-stepper-sep"></div>
+            <button class="plumb-btn" id="plumbNext" aria-label="Next step">▸</button>
+          </div>
+        </div>
+
+        <div class="plumb-controls-group" style="flex: 1; min-width: 200px; justify-content: center;">
+          <div class="plumb-step-display" id="plumbStepDisplay" data-nl="Stap 0 / 12: Selecteer" data-en="Step 0 / 12: Select">Step 0 / 12: Select</div>
+        </div>
+
+        <div class="plumb-controls-group" style="flex-shrink: 0; justify-content: flex-end; gap: 8px;">
+          <button class="ctrl lang" id="plumbZoomOut" style="font-size: 13px; padding: 6px 12px;">−</button>
+          <button class="ctrl" id="plumbZoomFit" style="font-size: 11px; padding: 6px 12px;" data-nl="Fit" data-en="Fit">Fit</button>
+          <button class="ctrl lang" id="plumbZoomIn" style="font-size: 13px; padding: 6px 12px;">+</button>
+          <button class="ctrl" id="plumbFullscreen" style="font-size: 11px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" style="width: 12px; height: 12px; fill: currentColor;">
+              <path class="fs-enter-icon" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+              <path class="fs-exit-icon" d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z" style="display: none;"/>
+            </svg>
+            <span class="fs-enter-text" data-nl="Volledig scherm" data-en="Fullscreen">Fullscreen</span>
+            <span class="fs-exit-text" data-nl="Scherm sluiten" data-en="Exit Fullscreen" style="display: none;">Exit Fullscreen</span>
+          </button>
+        </div>
       </div>
 
-      <div class="plumb-pipelines">
-        <!-- Pipeline 1: Req & Prototype -->
-        <div class="plumb-row row-spec">
-          <div class="plumb-row-header">
-            <span class="plumb-row-title" data-nl="Fase 1: Requirements" data-en="Phase 1: Requirements">Phase 1: Requirements</span>
-            <span class="plumb-row-subtitle" data-nl="Van prototype naar backlog" data-en="From prototype to backlog">From prototype to backlog</span>
+      <!-- Flowchart Workspace -->
+      <div class="plumb-workspace">
+        <div class="plumb-board-viewport">
+          <div class="plumb-board" id="plumbBoard">
+          
+          <!-- SVG Connections Overlay -->
+          <svg class="plumb-svg" width="1000" height="980">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#7a7674" />
+              </marker>
+              <marker id="arrow-active-slate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#7a7674" />
+              </marker>
+              <marker id="arrow-active-warm" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ff8c00" />
+              </marker>
+              <marker id="arrow-active-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ff4b28" />
+              </marker>
+              <marker id="arrow-active-deep" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#71012e" />
+              </marker>
+            </defs>
+
+            <!-- Connections -->
+            <!-- Step 1 connections -->
+            <path id="path-k-1" class="pipe-path" d="M 500 84 L 500 135" style="stroke-dasharray: 4, 3;" />
+            <path id="path-gate-1" class="gate-line" d="M 85 165 L 210 165" />
+            <path id="path-step-1" class="pipe-path" d="M 290 170 L 410 165" marker-end="url(#arrow)" />
+            
+            <!-- Step 2 connections -->
+            <path id="path-step-2" class="pipe-path" d="M 590 165 L 690 170" marker-end="url(#arrow)" />
+            <path id="path-gate-2" class="gate-line" d="M 740 170 L 860 165" />
+            
+            <!-- Step 3 connections -->
+            <path id="path-step-3" class="pipe-path" d="M 740 210 C 740 260 690 260 690 325" marker-end="url(#arrow)" />
+            <path id="path-k-2" class="pipe-path" d="M 780 355 L 840 325" style="stroke-dasharray: 4, 3;" />
+            
+            <!-- Step 4 connections -->
+            <path id="path-step-4" class="pipe-path" d="M 600 355 C 450 355 400 320 330 320" marker-end="url(#arrow)" />
+            <path id="path-gate-3" class="gate-line" d="M 150 315 L 250 320" />
+            
+            <!-- Step 5 connections -->
+            <path id="path-step-5" class="pipe-path" d="M 300 360 C 300 400 360 400 360 430" marker-end="url(#arrow)" />
+            
+            <!-- Step 6 connections -->
+            <path id="path-step-6" class="pipe-path" d="M 450 465 L 620 465" marker-end="url(#arrow)" />
+            <path id="path-gate-4" class="gate-line" d="M 830 460 L 700 465" />
+            
+            <!-- Step 7 connections -->
+            <path id="path-step-7" class="pipe-path" d="M 670 505 C 670 525 500 525 500 545" marker-end="url(#arrow)" />
+            
+            <!-- Step 8 connections -->
+            <path id="path-step-8" class="pipe-path" d="M 410 575 C 330 575 300 655 300 705" marker-end="url(#arrow)" />
+            <path id="path-gate-5" class="gate-line" d="M 120 700 L 220 705" />
+            
+            <!-- Step 9 connections -->
+            <path id="path-step-9" class="pipe-path" d="M 300 705 L 490 705" marker-end="url(#arrow)" />
+            <path id="path-k-3" class="pipe-path" d="M 840 705 L 710 705" style="stroke-dasharray: 4, 3;" />
+            
+            <!-- Step 10 connections -->
+            <path id="path-step-10" class="pipe-path" d="M 600 745 C 600 775 850 765 850 795" marker-end="url(#arrow)" />
+            
+            <!-- Step 11 connections -->
+            <path id="path-step-11" class="pipe-path" d="M 760 825 L 660 825" marker-end="url(#arrow)" />
+            <path id="path-gate-6" class="gate-line" d="M 610 905 L 620 860" />
+            
+            <!-- Step 12 connections -->
+            <path id="path-step-12" class="pipe-path" d="M 580 825 L 480 825" marker-end="url(#arrow)" />
+            <path id="path-deploy-end" class="pipe-path" d="M 240 825 L 134 827" marker-end="url(#arrow)" />
+          </svg>
+
+          <!-- Nodes Overlay -->
+          
+          <!-- Row 1 Nodes -->
+          <div class="fn-node fn-dashed color-blue" id="node-legacy-erp" style="left:440px; top:40px; width:120px;">
+            <div class="fn-rect-header">KNOWLEDGE</div>
+            <div class="fn-rect-title">Legacy ERP - CLI</div>
           </div>
-          <div class="plumb-flow">
-            <div class="plumb-pipe-line"></div>
-            <div class="plumb-flow-pulse"></div>
-            
-            <div class="plumb-node p-human" title="Business / PO review and steer">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>
-              <span data-nl="Business / PO" data-en="Business / PO">Business / PO</span>
-            </div>
-            
-            <div class="plumb-node p-ai" title="AI Document Generator">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/></svg></span>
-              <span data-nl="AI: Gen Docs" data-en="AI: Gen Docs">AI: Gen Docs</span>
-            </div>
-            
-            <div class="plumb-node p-tool" title="Wiki / Confluence Pull Request">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 12H4v-2h8v2zm8-4H4V8h16v4z"/></svg></span>
-              <span>Wiki PR</span>
-            </div>
-            
-            <div class="plumb-node p-human" title="Business / PO review Wiki PR">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>
-              <span data-nl="PO Approval" data-en="PO Approval">PO Approval</span>
-            </div>
-            
-            <div class="plumb-node p-ai" title="AI Backlog Story Generator">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/></svg></span>
-              <span data-nl="AI: Gen Stories" data-en="AI: Gen Stories">AI: Gen Stories</span>
-            </div>
-            
-            <div class="plumb-node p-status" title="DevOps Board state: Ready for Test Plan">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></span>
-              <span data-nl="DevOps Board" data-en="DevOps Board">DevOps Board</span>
-            </div>
+          
+          <div class="fn-node fn-actor color-gold" id="node-review-adjust-1" style="left:60px; top:140px; width:50px; height:50px;" title="Review & Adjust">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <div class="fn-actor-text" data-nl="Review" data-en="Review">Review</div>
+          </div>
+          
+          <div class="fn-node fn-diamond color-gold fn-gate" id="node-trigger-pipeline" style="left:210px; top:130px; width:80px; height:80px;">
+            <div class="fn-diamond-bg"></div>
+            <div class="fn-diamond-text" data-nl="Trigger pipeline" data-en="Trigger pipeline">Trigger pipeline</div>
+          </div>
+          
+          <div class="fn-node fn-rect color-slate" id="node-gen-proto-docs" style="left:410px; top:135px; width:180px;">
+            <div class="fn-rect-header" data-nl="AI: Gen Docs" data-en="AI: Gen Docs">AI: Gen Docs</div>
+            <div class="fn-rect-title" data-nl="Generate Prototype-Driven Docs" data-en="Generate Prototype-Driven Docs">Generate Prototype-Driven Docs</div>
+          </div>
+          
+          <div class="fn-node fn-diamond color-gold fn-gate" id="node-merge-wiki" style="left:690px; top:130px; width:80px; height:80px;">
+            <div class="fn-diamond-bg"></div>
+            <div class="fn-diamond-text" data-nl="Merge to Wiki Master" data-en="Merge to Wiki Master">Merge to Wiki Master</div>
+          </div>
+          
+          <div class="fn-node fn-actor color-gold" id="node-review-adjust-2" style="left:860px; top:140px; width:50px; height:50px;" title="Review & Adjust">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <div class="fn-actor-text" data-nl="Review" data-en="Review">Review</div>
+          </div>
+
+          <!-- Row 2 Nodes -->
+          <div class="fn-node fn-actor color-gold" id="node-promote-1" style="left:100px; top:290px; width:50px; height:50px;" title="Promote">
+            <svg viewBox="0 0 24 24"><path d="M5 4v2h14V4H5zm10 8h-3V8h-2v4H7l5 5 5-5z"/></svg>
+            <div class="fn-actor-text" data-nl="Promote" data-en="Promote">Promote</div>
+          </div>
+          
+          <div class="fn-node fn-diamond color-gold fn-gate" id="node-ready-test-plan" style="left:250px; top:280px; width:80px; height:80px;">
+            <div class="fn-diamond-bg"></div>
+            <div class="fn-diamond-text" data-nl="Ready for test plan" data-en="Ready for test plan">Ready for test plan</div>
+          </div>
+          
+          <div class="fn-node fn-rect color-warm" id="node-invoke-work-items" style="left:600px; top:285px; width:180px;">
+            <div class="fn-rect-header" data-nl="AI: Gen Stories" data-en="AI: Gen Stories">AI: Gen Stories</div>
+            <div class="fn-rect-title" data-nl="Invoke work items from requirements" data-en="Invoke work items from requirements">Invoke work items from requirements</div>
+          </div>
+          
+          <div class="fn-node fn-dashed color-blue" id="node-validated-proto-docs" style="left:840px; top:290px; width:130px;">
+            <div class="fn-rect-header">KNOWLEDGE</div>
+            <div class="fn-rect-title" style="font-size: 8.5px;" data-nl="Gevalideerde stories" data-en="Validated stories">Validated stories</div>
+          </div>
+
+          <!-- Row 3 Nodes -->
+          <div class="fn-node fn-rect color-red" id="node-test-plan-cases" style="left:270px; top:430px; width:180px;">
+            <div class="fn-rect-header" data-nl="AI: Test Ontwerp" data-en="AI: Test Design">AI: Test Design</div>
+            <div class="fn-rect-title" data-nl="Test plan & test cases from spec" data-en="Test plan & test cases from spec">Test plan & test cases from spec</div>
+          </div>
+          
+          <div class="fn-node fn-diamond color-gold fn-gate" id="node-ready-dev" style="left:620px; top:425px; width:80px; height:80px;">
+            <div class="fn-diamond-bg"></div>
+            <div class="fn-diamond-text" data-nl="Ready for dev" data-en="Ready for dev">Ready for dev</div>
+          </div>
+          
+          <div class="fn-node fn-actor color-gold" id="node-promote-2" style="left:830px; top:435px; width:50px; height:50px;" title="Promote">
+            <svg viewBox="0 0 24 24"><path d="M5 4v2h14V4H5zm10 8h-3V8h-2v4H7l5 5 5-5z"/></svg>
+            <div class="fn-actor-text" data-nl="Promote" data-en="Promote">Promote</div>
+          </div>
+
+          <!-- Row 4 Nodes -->
+          <div class="fn-node fn-rect color-red" id="node-gen-tests" style="left:410px; top:545px; width:180px;">
+            <div class="fn-rect-header" data-nl="AI: Test Code" data-en="AI: Test Code">AI: Test Code</div>
+            <div class="fn-rect-title" data-nl="Generate Tests from test cases" data-en="Generate Tests from test cases">Generate Tests from test cases</div>
+          </div>
+
+          <!-- Row 5 Nodes -->
+          <div class="fn-node fn-actor color-gold" id="node-approve-1" style="left:70px; top:675px; width:50px; height:50px;" title="Approve">
+            <svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+            <div class="fn-actor-text" data-nl="Approve" data-en="Approve">Approve</div>
+          </div>
+          
+          <div class="fn-node fn-diamond color-gold fn-gate" id="node-merge-main-1" style="left:220px; top:665px; width:80px; height:80px;">
+            <div class="fn-diamond-bg"></div>
+            <div class="fn-diamond-text" data-nl="Merge to main" data-en="Merge to main">Merge to main</div>
+          </div>
+          
+          <div class="fn-node fn-rect color-deep" id="node-build-code" style="left:490px; top:665px; width:220px;">
+            <div class="fn-rect-header" data-nl="AI: Realisatie & E2E" data-en="AI: Build & E2E">AI: Build & E2E</div>
+            <div class="fn-rect-title" data-nl="Build code from work item · Acceptance E2E (pre-deploy / aspire)" data-en="Build code from work item · Acceptance E2E (pre-deploy / aspire)">Build code from work item · Acceptance E2E (pre-deploy / aspire)</div>
+          </div>
+          
+          <div class="fn-node fn-dashed color-blue" id="node-validated-task" style="left:840px; top:670px; width:120px;">
+            <div class="fn-rect-header">KNOWLEDGE</div>
+            <div class="fn-rect-title" data-nl="Validated task" data-en="Validated task">Validated task</div>
+          </div>
+
+          <!-- Row 6 Nodes -->
+          <div class="fn-node fn-rect color-deep" id="node-ci-pr-validation" style="left:760px; top:795px; width:180px;">
+            <div class="fn-rect-header" data-nl="CI Validatie" data-en="CI Validation">CI Validation</div>
+            <div class="fn-rect-title" data-nl="CI* PR build validation" data-en="CI* PR build validation">CI* PR build validation</div>
+          </div>
+          
+          <div class="fn-node fn-diamond color-gold fn-gate" id="node-merge-main-2" style="left:580px; top:785px; width:80px; height:80px;">
+            <div class="fn-diamond-bg"></div>
+            <div class="fn-diamond-text" data-nl="Merge to main" data-en="Merge to main">Merge to main</div>
+          </div>
+          
+          <div class="fn-node fn-actor color-gold" id="node-approve-2" style="left:580px; top:905px; width:50px; height:50px;" title="Approve">
+            <svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+            <div class="fn-actor-text" data-nl="Approve" data-en="Approve">Approve</div>
+          </div>
+          
+          <div class="fn-node fn-rect color-deep" id="node-ci-cd-pipeline" style="left:240px; top:790px; width:240px;">
+            <div class="fn-rect-header" data-nl="Pijplijn" data-en="Pipeline">Pipeline</div>
+            <div class="fn-rect-title" data-nl="CI · Acceptance E2E (pre-deploy / aspire) · CD · E2E (post-deploy)" data-en="CI · Acceptance E2E (pre-deploy / aspire) · CD · E2E (post-deploy)">CI · Acceptance E2E (pre-deploy / aspire) · CD · E2E (post-deploy)</div>
+          </div>
+          
+          <div class="fn-node fn-actor color-green" id="node-deployed" style="left:70px; top:795px; width:50px; height:50px; box-shadow: 0 4px 10px rgba(34,197,94,0.2);" title="Deployed">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <div class="fn-actor-text" style="color:#22c55e;" data-nl="Live" data-en="Live">Live</div>
+          </div>
+
           </div>
         </div>
 
-        <!-- Pipeline 2: Test Design -->
-        <div class="plumb-row row-plan">
-          <div class="plumb-row-header">
-            <span class="plumb-row-title" data-nl="Fase 2: Testontwerp" data-en="Phase 2: Test Design">Phase 2: Test Design</span>
-            <span class="plumb-row-subtitle" data-nl="Stories naar test cases" data-en="Stories to test cases">Stories to test cases</span>
-          </div>
-          <div class="plumb-flow">
-            <div class="plumb-pipe-line"></div>
-            <div class="plumb-flow-pulse"></div>
-            
-            <div class="plumb-node p-human" title="Analyst / PO review and move story">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>
-              <span data-nl="Analyst / PO" data-en="Analyst / PO">Analyst / PO</span>
+        <!-- Sidebar Description Panel -->
+        <div class="plumb-side-panel">
+          <div class="plumb-desc-card-side" id="plumbDescCard">
+            <div class="plumb-desc-header">
+              <span class="plumb-desc-step" id="plumbDescStep">INFO</span>
+              <span class="plumb-desc-title" id="plumbDescTitle">AI-native SDLC Pipeline</span>
             </div>
-            
-            <div class="plumb-node p-tool" title="Board State Dispatcher">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 12H4v-2h8v2zm8-4H4V8h16v4z"/></svg></span>
-              <span>State Dispatch</span>
-            </div>
-            
-            <div class="plumb-node p-ai" title="AI Test Case Generator">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/></svg></span>
-              <span data-nl="AI: Gen Testplan" data-en="AI: Gen Testplan">AI: Gen Testplan</span>
-            </div>
-            
-            <div class="plumb-node p-status" title="Test plan added to Azure DevOps Board">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></span>
-              <span data-nl="Testplan Gepubliceerd" data-en="Testplan Published">Testplan Published</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pipeline 3: Test Automation -->
-        <div class="plumb-row row-verify">
-          <div class="plumb-row-header">
-            <span class="plumb-row-title" data-nl="Fase 3: Test Automation" data-en="Phase 3: Test Automation">Phase 3: Test Automation</span>
-            <span class="plumb-row-subtitle" data-nl="Test cases naar code" data-en="Test cases to code">Test cases to code</span>
-          </div>
-          <div class="plumb-flow">
-            <div class="plumb-pipe-line"></div>
-            <div class="plumb-flow-pulse"></div>
-            
-            <div class="plumb-node p-human" title="Dev / Analyst review and set story to Read">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>
-              <span data-nl="Dev / Analyst" data-en="Dev / Analyst">Dev / Analyst</span>
-            </div>
-            
-            <div class="plumb-node p-tool" title="Board State Dispatcher">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 12H4v-2h8v2zm8-4H4V8h16v4z"/></svg></span>
-              <span>State Dispatch</span>
-            </div>
-            
-            <div class="plumb-node p-ai" title="AI Test Code Generator">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/></svg></span>
-              <span data-nl="AI: Gen Test Code" data-en="AI: Gen Test Code">AI: Gen Test Code</span>
-            </div>
-            
-            <div class="plumb-node p-tool" title="Automations Repository Pull Request">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 12H4v-2h8v2zm8-4H4V8h16v4z"/></svg></span>
-              <span>Automations PR</span>
-            </div>
-            
-            <div class="plumb-node p-human" title="Dev review and merge automations PR">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>
-              <span data-nl="Merge to main" data-en="Merge to main">Merge to main</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pipeline 4: Build & Deploy / Delivery -->
-        <div class="plumb-row row-exec">
-          <div class="plumb-row-header">
-            <span class="plumb-row-title" data-nl="Fase 4-6: Delivery" data-en="Phase 4-6: Delivery">Phase 4-6: Delivery</span>
-            <span class="plumb-row-subtitle" data-nl="Code, CI/CD & Deploy" data-en="Code, CI/CD & Deploy">Code, CI/CD & Deploy</span>
-          </div>
-          <div class="plumb-flow">
-            <div class="plumb-pipe-line"></div>
-            <div class="plumb-flow-pulse"></div>
-            
-            <div class="plumb-node p-tool" title="Task State Manager tracks work item">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 12H4v-2h8v2zm8-4H4V8h16v4z"/></svg></span>
-              <span>Task Manager</span>
-            </div>
-            
-            <div class="plumb-node p-ai" title="AI Code generator writes build based on Reference Architecture & Design system">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/></svg></span>
-              <span data-nl="AI: Build Code" data-en="AI: Build Code">AI: Build Code</span>
-            </div>
-            
-            <div class="plumb-node p-tool" title="Local Acceptance E2E tests run using .NET Aspire">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 12H4v-2h8v2zm8-4H4V8h16v4z"/></svg></span>
-              <span data-nl="E2E (Aspire)" data-en="E2E (Aspire)">E2E (Aspire)</span>
-            </div>
-            
-            <div class="plumb-node p-tool" title="PR in Atlas Suite (Code Review state)">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 12H4v-2h8v2zm8-4H4V8h16v4z"/></svg></span>
-              <span>Atlas PR</span>
-            </div>
-            
-            <div class="plumb-node p-human" title="Dev review PR and merge to main">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>
-              <span data-nl="Dev Merge" data-en="Dev Merge">Dev Merge</span>
-            </div>
-            
-            <div class="plumb-node p-tool" title="CI / CD deployment through Dev -> Test -> Prod">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 12H4v-2h8v2zm8-4H4V8h16v4z"/></svg></span>
-              <span data-nl="CD Pipeline" data-en="CD Pipeline">CD Pipeline</span>
-            </div>
-            
-            <div class="plumb-node p-status" title="Deployed successfully to production">
-              <span class="p-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></span>
-              <span data-nl="Deployed" data-en="Deployed">Deployed</span>
-            </div>
+            <div class="plumb-desc-text" id="plumbDescText">Selecteer een stap met de knoppen hierboven of klik op een node in de flowchart om de details te bekijken.</div>
           </div>
         </div>
       </div>
@@ -903,9 +1238,175 @@ BR-01 Member changes address</div>
 
   let lang = 'en';
 
+  /* ---- Interactive Flowchart (Plumbing) Setup ---- */
+  const PIPELINE_STEPS = [
+    {
+      id: 1,
+      color: 'var(--slate)',
+      colorClass: 'color-slate',
+      nodes: ['node-gen-proto-docs', 'node-legacy-erp'],
+      gateNodes: ['node-review-adjust-1', 'node-trigger-pipeline'],
+      paths: ['path-k-1', 'path-step-1', 'path-gate-1'],
+      isGate: false,
+      titleEn: 'Prototype-Driven Documentation',
+      titleNl: 'Prototype-Gestuurde Documentatie',
+      descEn: 'AI agents read legacy ERP database schemas via CLI and ingest wireframes or prototype definitions to generate standard business requirements, use cases, and technical specifications.',
+      descNl: 'AI-agents lezen legacy ERP-databaseschema\'s via de CLI en verwerken wireframes of prototype-definities om standaard business requirements, use cases en technische specificaties te genereren.'
+    },
+    {
+      id: 2,
+      color: 'var(--slate)',
+      colorClass: 'color-slate',
+      nodes: ['node-merge-wiki'],
+      gateNodes: ['node-review-adjust-2'],
+      paths: ['path-step-2', 'path-gate-2'],
+      isGate: true,
+      titleEn: 'Wiki Master Review (Human Gate)',
+      titleNl: 'Wiki Master Review (Menselijke Poort)',
+      descEn: 'A human operator reviews the generated business requirements. Upon approval, they are merged to the corporate Wiki Master, establishing the system specifications baseline.',
+      descNl: 'Een menselijke reviewer beoordeelt de gegenereerde business requirements. Na goedkeuring worden ze samengevoegd in de Wiki Master, de centrale bron voor systeemspecificaties.'
+    },
+    {
+      id: 3,
+      color: 'var(--warm)',
+      colorClass: 'color-warm',
+      nodes: ['node-invoke-work-items', 'node-validated-proto-docs'],
+      gateNodes: ['node-promote-1'],
+      paths: ['path-step-3', 'path-k-2'],
+      isGate: false,
+      titleEn: 'Generate Work Items',
+      titleNl: 'Werkitems Genereren',
+      descEn: 'AI planning agents break down approved requirements from the Wiki into detailed user stories, functional work items, and sprint tasks, linking them directly to spec sections.',
+      descNl: 'AI-planning agents verdelen goedgekeurde requirements uit de Wiki in gedetailleerde user stories, functionele werkitems en sprinttaken, met directe links naar specificaties.'
+    },
+    {
+      id: 4,
+      color: 'var(--warm)',
+      colorClass: 'color-warm',
+      nodes: ['node-ready-test-plan'],
+      gateNodes: [],
+      paths: ['path-step-4', 'path-gate-3'],
+      isGate: true,
+      titleEn: 'Ready for Test Plan (Human Gate)',
+      titleNl: 'Gereed voor Test Plan (Menselijke Poort)',
+      descEn: 'The system validates that the work items meet the definition of ready (DoR) and a sprint coordinator signs off, signaling that test scenarios can be generated.',
+      descNl: 'Het systeem controleert of de werkitems voldoen aan de definition of ready (DoR) en een sprintcoördinator tekent af, waarna de testscenario\'s gegenereerd kunnen worden.'
+    },
+    {
+      id: 5,
+      color: 'var(--red)',
+      colorClass: 'color-red',
+      nodes: ['node-test-plan-cases'],
+      gateNodes: [],
+      paths: ['path-step-5'],
+      isGate: false,
+      titleEn: 'Generate Test Cases',
+      titleNl: 'Test Cases Genereren',
+      descEn: 'AI test design agents generate complete test plans and specific manual/automated test cases derived directly from specification criteria, ensuring full coverage.',
+      descNl: 'AI-testontwerpagents genereren volledige testplannen en specifieke handmatige/geautomatiseerde testcases afgeleid van de specificaties om volledige dekking te garanderen.'
+    },
+    {
+      id: 6,
+      color: 'var(--red)',
+      colorClass: 'color-red',
+      nodes: ['node-ready-dev'],
+      gateNodes: ['node-promote-2'],
+      paths: ['path-step-6', 'path-gate-4'],
+      isGate: true,
+      titleEn: 'Ready for Dev (Human Gate)',
+      titleNl: 'Gereed voor Dev (Menselijke Poort)',
+      descEn: 'The testing scope is locked and validated. The sprint manager promotes the task, unlocking the development workspace for code generation agents.',
+      descNl: 'De testomvang is vastgelegd en gevalideerd. De sprintmanager promoveert de taak, waardoor de ontwikkelomgeving wordt ontgrendeld voor code-generatie agents.'
+    },
+    {
+      id: 7,
+      color: 'var(--red)',
+      colorClass: 'color-red',
+      nodes: ['node-gen-tests'],
+      gateNodes: [],
+      paths: ['path-step-7'],
+      isGate: false,
+      titleEn: 'Generate Test Code',
+      titleNl: 'Testcode Genereren',
+      descEn: 'AI agents automatically compile acceptance test cases into runnable test code (unit, integration, and E2E scripts) ahead of application code implementation (TDD).',
+      descNl: 'AI-agents compileren automatisch acceptatietests in uitvoerbare testcode (unit-, integratie- en E2E-scripts) voorafgaand aan de applicatiecode (TDD).'
+    },
+    {
+      id: 8,
+      color: 'var(--red)',
+      colorClass: 'color-red',
+      nodes: ['node-merge-main-1'],
+      gateNodes: ['node-approve-1'],
+      paths: ['path-step-8', 'path-gate-5'],
+      isGate: true,
+      titleEn: 'Merge Test Suite (Human Gate)',
+      titleNl: 'Merge Test Suite (Menselijke Poort)',
+      descEn: 'Human developers review the generated test suite. Upon approval, the tests are merged into the main repository branch to establish the validation gate.',
+      descNl: 'Menselijke ontwikkelaars beoordelen de gegenereerde testsuite. Na goedkeuring worden de tests samengevoegd in de main branch om de validatiepoort te sluiten.'
+    },
+    {
+      id: 9,
+      color: 'var(--deep)',
+      colorClass: 'color-deep',
+      nodes: ['node-build-code', 'node-validated-task'],
+      gateNodes: [],
+      paths: ['path-step-9', 'path-k-3'],
+      isGate: false,
+      titleEn: 'Build Application Code',
+      titleNl: 'Bouw Applicatiecode',
+      descEn: 'AI code agents implement application logic to satisfy requirements and pass pre-generated tests. An isolated environment (e.g. Aspire) runs the test suite automatically.',
+      descNl: 'AI-code agents implementeren applicatielogica om te voldoen aan eisen en testcases. De testsuite wordt automatisch uitgevoerd in een geïsoleerde sandbox.'
+    },
+    {
+      id: 10,
+      color: 'var(--deep)',
+      colorClass: 'color-deep',
+      nodes: ['node-ci-pr-validation'],
+      gateNodes: [],
+      paths: ['path-step-10'],
+      isGate: false,
+      titleEn: 'CI PR Validation',
+      titleNl: 'CI PR Validatie',
+      descEn: 'The Pull Request triggers a continuous integration pipeline, executing full compilation, linting, security analysis, and end-to-end integration tests.',
+      descNl: 'De Pull Request triggert een continuous integration pipeline, die volledige compilatie, linting, beveiligingsanalyse en end-to-end integratietests uitvoert.'
+    },
+    {
+      id: 11,
+      color: 'var(--deep)',
+      colorClass: 'color-deep',
+      nodes: ['node-merge-main-2'],
+      gateNodes: ['node-approve-2'],
+      paths: ['path-step-11', 'path-gate-6'],
+      isGate: true,
+      titleEn: 'PR Approval & Merge (Human Gate)',
+      titleNl: 'PR Goedkeuring & Merge (Menselijke Poort)',
+      descEn: 'A senior human engineer performs a final review of the code changes, design quality, and CI results. Approving the PR merges the code to the main branch.',
+      descNl: 'Een senior menselijke engineer voert een laatste review uit van code, ontwerpkwaliteit en CI-resultaten. Goedkeuring van de PR merget de code naar de main branch.'
+    },
+    {
+      id: 12,
+      color: 'var(--deep)',
+      colorClass: 'color-deep',
+      nodes: ['node-ci-cd-pipeline', 'node-deployed'],
+      gateNodes: [],
+      paths: ['path-step-12', 'path-deploy-end'],
+      isGate: false,
+      titleEn: 'CI/CD Deployment',
+      titleNl: 'CI/CD Deployment',
+      descEn: 'The CD pipeline builds the production container and deploys it live to the cloud infrastructure (Plaetform), running post-deploy smoke and sanity tests.',
+      descNl: 'De CD-pipeline bouwt de productiecontainer en implementeert deze live op de cloudinfrastructuur (Plaetform), inclusief post-deploy rooktests.'
+    }
+  ];
+
+  let currentStep = 0;
+  let zoomScale = 1.0;
+  let walkInterval = null;
+  let isWalking = false;
+
   /* ---- i18n ---- */
   function applyLang(){
     document.documentElement.lang = lang === 'nl' ? 'nl' : 'en';
+    body.setAttribute('lang', lang);
     document.querySelectorAll('[data-nl]').forEach(el=>{
       const v = el.getAttribute('data-' + lang);
       if(v === null) return;
@@ -914,6 +1415,16 @@ BR-01 Member changes address</div>
       else el.textContent = v;
     });
     langBtn.textContent = lang === 'en' ? 'NL' : 'EN';
+    
+    // Refresh active step display text or show default
+    if (currentStep > 0) {
+      highlightStep(currentStep);
+    } else {
+      const displayEl = document.getElementById('plumbStepDisplay');
+      if (displayEl) {
+        displayEl.textContent = lang === 'nl' ? 'Stap 0 / 12: Selecteer' : 'Step 0 / 12: Select';
+      }
+    }
   }
 
   /* ---- station pin ---- */
@@ -935,14 +1446,313 @@ BR-01 Member changes address</div>
     body.classList.toggle('show-platform');
     platformToggle.classList.toggle('active', body.classList.contains('show-platform'));
   });
+  
   plumbingToggle.addEventListener('click', ()=>{
     body.classList.toggle('show-plumbing');
     plumbingToggle.classList.toggle('active', body.classList.contains('show-plumbing'));
+    if (body.classList.contains('show-plumbing')) {
+      setTimeout(zoomFit, 100);
+    }
   });
 
   document.addEventListener('keydown', e=>{
     if(e.key==='Escape') stations.forEach(x=>x.classList.remove('pinned'));
     if(e.code==='Space' && e.target===body){ e.preventDefault(); body.classList.toggle('paused'); }
+  });
+
+  /* ---- Plumbing Flowchart Interactivity ---- */
+  const WELCOME_STEP = {
+    titleEn: 'AI-native SDLC Pipeline',
+    titleNl: 'AI-native SDLC Pipeline',
+    descEn: 'Select a step using the controls above or click/hover a node in the flowchart to view detailed pipeline stages.',
+    descNl: 'Selecteer een stap met de knoppen hierboven of klik/hover een node in de flowchart om de details te bekijken.'
+  };
+
+  function getNextStepIndex(current, direction) {
+    let next = current + direction;
+    const hideGates = !document.getElementById('plumbGatesToggle').checked;
+    
+    while (next >= 1 && next <= PIPELINE_STEPS.length) {
+      if (hideGates && PIPELINE_STEPS[next - 1].isGate) {
+        next += direction;
+      } else {
+        return next;
+      }
+    }
+    
+    // Wrap around
+    if (next > PIPELINE_STEPS.length) {
+      for (let i = 1; i <= PIPELINE_STEPS.length; i++) {
+        if (!hideGates || !PIPELINE_STEPS[i - 1].isGate) return i;
+      }
+    }
+    if (next < 1) {
+      for (let i = PIPELINE_STEPS.length; i >= 1; i--) {
+        if (!hideGates || !PIPELINE_STEPS[i - 1].isGate) return i;
+      }
+    }
+    return 1;
+  }
+
+  function highlightStep(stepIndex) {
+    if (stepIndex === 0) {
+      restoreActiveStep();
+      return;
+    }
+
+    const step = PIPELINE_STEPS[stepIndex - 1];
+    if (!step) return;
+
+    const hideGates = !document.getElementById('plumbGatesToggle').checked;
+
+    // Highlight nodes
+    document.querySelectorAll('.fn-node').forEach(n => {
+      const isCoreNode = step.nodes.includes(n.id);
+      const isGateNode = step.gateNodes && step.gateNodes.includes(n.id);
+      
+      if (isCoreNode || (!hideGates && isGateNode)) {
+        n.classList.add('active-step');
+        n.classList.remove('dimmed');
+      } else {
+        n.classList.remove('active-step');
+        n.classList.add('dimmed');
+      }
+    });
+
+    // Highlight paths
+    document.querySelectorAll('.pipe-path, .gate-line').forEach(p => {
+      if (step.paths.includes(p.id)) {
+        p.classList.add('active');
+        p.style.setProperty('--path-color', step.color);
+        const markerType = step.color === 'var(--slate)' ? 'slate' : 
+                           step.color === 'var(--warm)' ? 'warm' :
+                           step.color === 'var(--red)' ? 'red' : 'deep';
+        p.setAttribute('marker-end', `url(#arrow-active-${markerType})`);
+      } else {
+        p.classList.remove('active', 'highlighted');
+        p.style.removeProperty('--path-color');
+        p.setAttribute('marker-end', 'url(#arrow)');
+      }
+    });
+
+    // Update display text
+    const displayEl = document.getElementById('plumbStepDisplay');
+    const stepLabel = lang === 'nl' ? 'Stap' : 'Step';
+    const stepTitle = lang === 'nl' ? step.titleNl : step.titleEn;
+    displayEl.textContent = `${stepLabel} ${stepIndex} / 12: ${stepTitle}`;
+
+    // Update description card
+    const card = document.getElementById('plumbDescCard');
+    card.style.borderTop = '4px solid ' + step.color;
+    document.getElementById('plumbDescStep').textContent = (lang === 'nl' ? 'STAP ' : 'STEP ') + stepIndex;
+    document.getElementById('plumbDescTitle').textContent = stepTitle;
+    document.getElementById('plumbDescText').textContent = lang === 'nl' ? step.descNl : step.descEn;
+  }
+
+  function tempHighlightStep(stepIndex) {
+    const step = PIPELINE_STEPS[stepIndex - 1];
+    if (!step) return;
+
+    const hideGates = !document.getElementById('plumbGatesToggle').checked;
+
+    // Temporarily highlight nodes
+    document.querySelectorAll('.fn-node').forEach(n => {
+      const isCoreNode = step.nodes.includes(n.id);
+      const isGateNode = step.gateNodes && step.gateNodes.includes(n.id);
+      if (isCoreNode || (!hideGates && isGateNode)) {
+        n.classList.add('active-step');
+        n.classList.remove('dimmed');
+      } else {
+        n.classList.remove('active-step');
+        n.classList.add('dimmed');
+      }
+    });
+
+    // Temporarily highlight paths
+    document.querySelectorAll('.pipe-path, .gate-line').forEach(p => {
+      if (step.paths.includes(p.id)) {
+        p.classList.add('highlighted');
+        p.style.setProperty('--path-color', step.color);
+        const markerType = step.color === 'var(--slate)' ? 'slate' : 
+                           step.color === 'var(--warm)' ? 'warm' :
+                           step.color === 'var(--red)' ? 'red' : 'deep';
+        p.setAttribute('marker-end', `url(#arrow-active-${markerType})`);
+      } else {
+        p.classList.remove('active', 'highlighted');
+        p.style.removeProperty('--path-color');
+        p.setAttribute('marker-end', 'url(#arrow)');
+      }
+    });
+
+    // Update description card
+    const card = document.getElementById('plumbDescCard');
+    card.style.borderTop = '4px solid ' + step.color;
+    document.getElementById('plumbDescStep').textContent = (lang === 'nl' ? 'STAP ' : 'STEP ') + stepIndex;
+    document.getElementById('plumbDescTitle').textContent = lang === 'nl' ? step.titleNl : step.titleEn;
+    document.getElementById('plumbDescText').textContent = lang === 'nl' ? step.descNl : step.descEn;
+  }
+
+  function restoreActiveStep() {
+    if (currentStep > 0) {
+      highlightStep(currentStep);
+    } else {
+      document.querySelectorAll('.fn-node').forEach(n => {
+        n.classList.remove('active-step', 'dimmed');
+      });
+      document.querySelectorAll('.pipe-path, .gate-line').forEach(p => {
+        p.classList.remove('active', 'highlighted');
+        p.style.removeProperty('--path-color');
+        p.setAttribute('marker-end', 'url(#arrow)');
+      });
+      
+      const card = document.getElementById('plumbDescCard');
+      card.style.borderTop = '4px solid var(--line)';
+      document.getElementById('plumbDescStep').textContent = 'INFO';
+      document.getElementById('plumbDescTitle').textContent = lang === 'nl' ? WELCOME_STEP.titleNl : WELCOME_STEP.titleEn;
+      document.getElementById('plumbDescText').textContent = lang === 'nl' ? WELCOME_STEP.descNl : WELCOME_STEP.descEn;
+      
+      const displayEl = document.getElementById('plumbStepDisplay');
+      displayEl.textContent = lang === 'nl' ? 'Stap 0 / 12: Selecteer' : 'Step 0 / 12: Select';
+    }
+  }
+
+  // Map nodes to steps for hover / click
+  const nodeToStepIndex = {
+    'node-legacy-erp': 1,
+    'node-review-adjust-1': 1,
+    'node-trigger-pipeline': 1,
+    'node-gen-proto-docs': 1,
+    'node-merge-wiki': 2,
+    'node-review-adjust-2': 2,
+    'node-promote-1': 3,
+    'node-validated-proto-docs': 3,
+    'node-invoke-work-items': 3,
+    'node-ready-test-plan': 4,
+    'node-test-plan-cases': 5,
+    'node-ready-dev': 6,
+    'node-promote-2': 6,
+    'node-gen-tests': 7,
+    'node-approve-1': 8,
+    'node-merge-main-1': 8,
+    'node-build-code': 9,
+    'node-validated-task': 9,
+    'node-ci-pr-validation': 10,
+    'node-merge-main-2': 11,
+    'node-approve-2': 11,
+    'node-ci-cd-pipeline': 12,
+    'node-deployed': 12
+  };
+
+  // Bind mouse and click events to nodes
+  document.querySelectorAll('.fn-node').forEach(node => {
+    node.addEventListener('mouseenter', () => {
+      const stepIdx = nodeToStepIndex[node.id];
+      if (stepIdx) {
+        tempHighlightStep(stepIdx);
+      }
+    });
+    node.addEventListener('mouseleave', () => {
+      restoreActiveStep();
+    });
+    node.addEventListener('click', () => {
+      const stepIdx = nodeToStepIndex[node.id];
+      if (stepIdx) {
+        const hideGates = !document.getElementById('plumbGatesToggle').checked;
+        if (hideGates && PIPELINE_STEPS[stepIdx - 1].isGate) return;
+        currentStep = stepIdx;
+        highlightStep(currentStep);
+      }
+    });
+  });
+
+  // Controls Event Listeners
+  document.getElementById('plumbPrev').addEventListener('click', () => {
+    currentStep = getNextStepIndex(currentStep, -1);
+    highlightStep(currentStep);
+  });
+
+  document.getElementById('plumbNext').addEventListener('click', () => {
+    currentStep = getNextStepIndex(currentStep, 1);
+    highlightStep(currentStep);
+  });
+
+  // Gates Toggle
+  document.getElementById('plumbGatesToggle').addEventListener('change', (e) => {
+    const hideGates = !e.target.checked;
+    if (hideGates) {
+      body.classList.add('hide-plumb-gates');
+      if (currentStep > 0 && PIPELINE_STEPS[currentStep - 1].isGate) {
+        currentStep = getNextStepIndex(currentStep, 1);
+        highlightStep(currentStep);
+      }
+    } else {
+      body.classList.remove('hide-plumb-gates');
+    }
+  });
+
+  // Zoom management
+  function applyZoom() {
+    const board = document.getElementById('plumbBoard');
+    if (board) {
+      board.style.transform = `scale(${zoomScale})`;
+    }
+  }
+
+  document.getElementById('plumbZoomIn').addEventListener('click', () => {
+    zoomScale = Math.min(zoomScale + 0.1, 2.0);
+    applyZoom();
+  });
+
+  document.getElementById('plumbZoomOut').addEventListener('click', () => {
+    zoomScale = Math.max(zoomScale - 0.1, 0.45);
+    applyZoom();
+  });
+
+  document.getElementById('plumbZoomFit').addEventListener('click', () => {
+    zoomFit();
+  });
+
+  function zoomFit() {
+    const viewport = document.querySelector('.plumb-board-viewport');
+    if (!viewport) return;
+    const viewportRect = viewport.getBoundingClientRect();
+    const scaleX = (viewportRect.width - 24) / 1000;
+    const scaleY = (viewportRect.height - 24) / 980;
+    zoomScale = Math.max(Math.min(scaleX, scaleY, 1.2), 0.45);
+    applyZoom();
+  }
+
+  window.addEventListener('resize', () => {
+    if (body.classList.contains('show-plumbing')) {
+      zoomFit();
+    }
+  });
+
+  // Fullscreen management
+  document.getElementById('plumbFullscreen').addEventListener('click', () => {
+    body.classList.toggle('plumbing-fullscreen');
+    setTimeout(zoomFit, 100);
+  });
+
+  // Keyboard navigation shortcuts
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && body.classList.contains('plumbing-fullscreen')) {
+      e.preventDefault();
+      body.classList.remove('plumbing-fullscreen');
+      setTimeout(zoomFit, 100);
+      return;
+    }
+    if (body.classList.contains('show-plumbing')) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        currentStep = getNextStepIndex(currentStep, 1);
+        highlightStep(currentStep);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        currentStep = getNextStepIndex(currentStep, -1);
+        highlightStep(currentStep);
+      }
+    }
   });
 
   /* ---- init ---- */
