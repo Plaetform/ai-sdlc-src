@@ -75,15 +75,14 @@
   /* ---------- the line ---------- */
   .line{position:relative; z-index:4; margin:clamp(22px,4vh,46px) 0 0}
 
-  /* iterative loop label between stations */
-  .iter-label{position:absolute; top:-28px; display:flex; align-items:center; gap:6px;
+  .iter-row{display:flex; gap:clamp(6px,1vw,16px); margin-bottom:8px}
+  .iter-spacer{min-width:0}
+  .iter-label{display:flex; align-items:center; justify-content:center; gap:6px;
     font-family:var(--mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
-    color:var(--warm); font-weight:600; z-index:5}
+    color:var(--warm); font-weight:600; min-width:0; white-space:nowrap}
   .iter-label svg{width:14px; height:14px; fill:var(--warm); flex:none}
-  .iter-spec-plan{left:8%; width:22%}
-  .iter-execute{left:43%; width:26%; justify-content:center}
 
-  .stations{display:flex; gap:clamp(6px,1vw,16px); align-items:flex-end}
+  .stations{display:flex; gap:clamp(6px,1vw,16px); align-items:flex-start}
   .station{flex:1 1 0; min-width:0; position:relative; display:flex; flex-direction:column;
     align-items:center; cursor:pointer; outline:none; transition:opacity .4s}
   .station.wide{flex:1.8 1 0}
@@ -223,10 +222,50 @@
   .secsweep{position:absolute; top:0; bottom:0; width:24px;
     background:linear-gradient(90deg,transparent,rgba(113,1,46,.14),transparent); animation:sweep 3.2s ease-in-out infinite}
 
+  /* ===== Phase Zero: Forward Deployed Engineer ===== */
+  .station.s0{--accent:var(--slate); --accentglow:var(--slate-glow); cursor:default}
+  .station.s0 .card{border:1px dashed var(--slate); border-radius:4px;
+    background:repeating-linear-gradient(45deg, var(--bg), var(--bg) 8px, rgba(122,118,116,.03) 8px, rgba(122,118,116,.03) 16px)}
+  .station.s0:hover .card,.station.s0.pinned .card{transform:none; border-color:var(--slate);
+    box-shadow:0 4px 16px -8px rgba(0,0,0,.15)}
+  .fde-inner{width:100%; height:100%; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:4px}
+  .fde-figures{display:flex; align-items:flex-end; gap:12px; margin-bottom:2px}
+  .fde-person{width:36px; height:36px}
+  .fde-person circle,.fde-person path{stroke:var(--slate); stroke-width:2.2; fill:none}
+  .fde-person.business circle,.fde-person.business path{stroke:var(--warm)}
+  .fde-interact{display:flex; align-items:center; gap:3px; margin-top:-4px}
+  .fde-interact-dot{width:4px; height:4px; border-radius:50%; background:var(--slate); opacity:.5;
+    animation:fde-pulse 1.6s ease-in-out infinite}
+  .fde-interact-dot:nth-child(2){animation-delay:.3s}
+  .fde-interact-dot:nth-child(3){animation-delay:.6s}
+  .fde-protos{display:flex; gap:5px; margin-top:4px}
+  .fde-proto{width:18px; height:14px; border-radius:2px; border:1.5px solid var(--slate);
+    position:relative; opacity:.35; animation:fde-iterate 6s ease-in-out infinite}
+  .fde-proto:nth-child(1){animation-delay:0s}
+  .fde-proto:nth-child(2){animation-delay:1.5s}
+  .fde-proto:nth-child(3){animation-delay:3s}
+  .fde-proto .fde-check{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color:#22c55e; font-size:10px; font-weight:900; opacity:0}
+  .fde-proto:nth-child(3) .fde-check{animation:fde-approve 6s ease-in-out infinite; animation-delay:3s}
+  @keyframes fde-pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:.8;transform:scale(1.2)}}
+  @keyframes fde-iterate{0%,20%{opacity:.2;transform:scale(.9)}30%,50%{opacity:.7;transform:scale(1)}60%,100%{opacity:.2;transform:scale(.9)}}
+  @keyframes fde-approve{0%,60%{opacity:0}70%,90%{opacity:1}100%{opacity:0}}
+  .fde-arrow{display:flex; align-items:center; gap:3px;
+    font-family:var(--mono); font-size:9px; font-weight:700; color:var(--slate); letter-spacing:.06em; margin-top:2px}
+  .fde-arrow svg{width:12px; height:12px; fill:var(--slate)}
+  .fde-platform-badge{position:absolute; top:6px; right:7px; z-index:4; cursor:pointer;
+    display:flex; align-items:center; gap:4px; padding:2px 6px;
+    border-radius:50px; border:1px solid var(--line); background:rgba(255,255,255,.82);
+    font-family:var(--mono); font-size:9px; letter-spacing:.04em; color:var(--slate);
+    transition:border-color .2s, color .2s, background .2s}
+  .fde-platform-badge:hover{border-color:var(--warm); color:var(--red); background:rgba(255,140,0,.06)}
+  .fde-platform-badge svg{width:10px; height:10px; fill:currentColor}
+
   /* ===== Plaetform foundation ===== */
   .foundation{position:relative; z-index:2; margin-top:4px; overflow:hidden;
     max-height:0; opacity:0; transition:max-height .5s cubic-bezier(.4,0,.2,1), opacity .4s ease, margin .4s ease}
-  body.show-platform .foundation{max-height:160px; opacity:1; margin-top:6px}
+  body.show-platform .foundation{max-height:200px; opacity:1; margin-top:6px}
   .found-header{display:flex; align-items:center; gap:8px; margin-bottom:8px}
   .found-icon{width:18px; height:18px; border-radius:3px;
     background:linear-gradient(135deg,var(--warm),var(--red)); display:flex; align-items:center; justify-content:center; flex:none}
@@ -234,18 +273,27 @@
   .found-name{font-family:var(--disp); font-weight:800; font-size:14px; color:var(--ink); letter-spacing:-.01em}
   .found-sep{width:1px; height:16px; background:var(--line); flex:none}
   .found-tagline{font-size:12px; color:var(--muted); font-weight:500}
-  .found-zones{display:flex; gap:clamp(6px,1vw,16px); align-items:stretch}
+  .found-zones{display:flex; gap:0; align-items:stretch}
+  .found-group{display:flex; gap:clamp(6px,1vw,16px); align-items:stretch}
+  .found-group-sandbox{flex:2 1 0}
+  .found-group-gates{flex:3 1 0; display:flex; gap:clamp(6px,1vw,16px)}
+  .found-pipeline-link{flex:0 0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:0 14px; cursor:pointer; transition:transform .2s, opacity .2s; opacity:.6}
+  .found-pipeline-link:hover{opacity:1; transform:scale(1.1)}
+  .found-pipeline-link svg{width:28px; height:28px; fill:var(--red)}
+  .found-pipeline-link-label{font-family:var(--mono); font-size:8px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin-top:4px; white-space:nowrap}
   .found-zone{border:1px solid var(--line); border-radius:5px; padding:10px 14px;
     position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:center;
-    transition:border-color .3s, box-shadow .3s}
+    transition:border-color .3s, box-shadow .3s; flex:1 1 0}
   .found-zone:hover{border-color:var(--zone-accent,var(--line));
     box-shadow:0 4px 16px -8px rgba(0,0,0,.15)}
   .found-zone::before{content:""; position:absolute; inset:0;
     background:var(--zone-bg,transparent); pointer-events:none}
-  .fz-sandbox{flex:3 1 0; --zone-accent:var(--slate); --zone-bg:rgba(122,118,116,.03)}
-  .fz-dev{flex:1.8 1 0; --zone-accent:var(--warm); --zone-bg:rgba(255,140,0,.04)}
-  .fz-test{flex:1 1 0; --zone-accent:var(--red); --zone-bg:rgba(255,75,40,.04)}
-  .fz-prod{flex:1 1 0; --zone-accent:var(--deep); --zone-bg:rgba(113,1,46,.05)}
+  .fz-sandbox{--zone-accent:var(--slate); --zone-bg:rgba(122,118,116,.03)}
+  .fz-dev{--zone-accent:var(--warm); --zone-bg:rgba(255,140,0,.04)}
+  .fz-test{--zone-accent:var(--red); --zone-bg:rgba(255,75,40,.04)}
+  .fz-prod{--zone-accent:var(--deep); --zone-bg:rgba(113,1,46,.05)}
   .fz-label{display:flex; align-items:center; gap:6px; margin-bottom:4px}
   .fz-dot{width:6px; height:6px; border-radius:50%; flex:none}
   .fz-sandbox .fz-dot{background:var(--slate); box-shadow:0 0 0 3px var(--slate-glow); animation:beat 2.4s ease-in-out infinite}
@@ -322,54 +370,6 @@
     gap: 12px;
   }
   
-  /* Toggle Switch */
-  .plumb-switch-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--ink-2);
-    cursor: pointer;
-    user-select: none;
-  }
-  .plumb-switch {
-    position: relative;
-    display: inline-block;
-    width: 36px;
-    height: 20px;
-  }
-  .plumb-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  .plumb-slider {
-    position: absolute;
-    cursor: pointer;
-    inset: 0;
-    background-color: var(--line);
-    border-radius: 20px;
-    transition: .3s;
-  }
-  .plumb-slider:before {
-    position: absolute;
-    content: "";
-    height: 14px;
-    width: 14px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    border-radius: 50%;
-    transition: .3s;
-  }
-  .plumb-switch input:checked + .plumb-slider {
-    background-color: var(--warm);
-  }
-  .plumb-switch input:checked + .plumb-slider:before {
-    transform: translateX(16px);
-  }
-
   /* Stepper */
   .plumb-stepper {
     display: flex;
@@ -402,23 +402,18 @@
     background: var(--warm-glow);
     color: var(--red);
   }
-  #plumbWalk .when-playing { display: none; }
-  #plumbWalk .when-paused { display: inline; }
-  #plumbWalk.walking-active .when-playing { display: inline; }
-  #plumbWalk.walking-active .when-paused { display: none; }
   .plumb-stepper-sep {
     width: 1px;
     height: 16px;
     background: var(--line);
     margin: 0 4px;
   }
-  .plumb-step-display {
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--ink-2);
-    min-width: 150px;
-    text-align: center;
+  .plumb-title-center {
+    font-family: var(--disp);
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -.01em;
   }
 
   /* Board & Canvas */
@@ -597,13 +592,7 @@
     opacity: 0.35;
   }
 
-  /* Hide human gates toggling */
-  body.hide-plumb-gates .fn-gate,
-  body.hide-plumb-gates .fn-actor,
-  body.hide-plumb-gates .gate-line {
-    opacity: 0 !important;
-    pointer-events: none;
-  }
+
 
   /* Node Colors */
   .color-slate { --node-color: var(--slate); --accent-rgb: 122,118,116; }
@@ -707,16 +696,15 @@
     font-weight: 500;
   }
 
-  /* ---------- footer ---------- */
-  .foot{position:relative; z-index:3; display:flex; align-items:center; justify-content:space-between;
-    gap:18px; margin-top:22px; padding-top:18px; border-top:1px solid var(--line); flex-wrap:wrap}
-  .legend{display:flex; gap:18px; flex-wrap:wrap; font-size:11.5px; color:var(--muted); font-weight:600}
-  .legend span{display:inline-flex; align-items:center; gap:7px}
-  .legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
-  .controls{display:inline-flex; align-items:center; gap:9px}
-  .ctrl{display:inline-flex; align-items:center; gap:9px; border:1px solid var(--line); background:var(--bg);
-    border-radius:50px; padding:9px 16px; color:var(--ink-2); font-family:var(--disp); font-weight:600;
-    font-size:15px; cursor:pointer; transition:border-color .2s, color .2s, box-shadow .2s}
+  /* ---------- floating controls ---------- */
+  .floating-controls{position:fixed; bottom:24px; right:24px; z-index:100;
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(255,255,255,.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border:1px solid var(--line); border-radius:50px; padding:8px 14px;
+    box-shadow:0 8px 32px -8px rgba(0,0,0,.18), 0 2px 8px -2px rgba(0,0,0,.08)}
+  .ctrl{display:inline-flex; align-items:center; gap:7px; border:1px solid var(--line); background:transparent;
+    border-radius:50px; padding:7px 14px; color:var(--ink-2); font-family:var(--disp); font-weight:600;
+    font-size:13px; cursor:pointer; transition:border-color .2s, color .2s, box-shadow .2s, background .2s}
   .ctrl:hover{border-color:var(--warm); color:var(--red); box-shadow:0 0 0 3px var(--warm-glow)}
   .ctrl svg{width:12px;height:12px;fill:currentColor}
   .ctrl .pause-i{display:none}
@@ -725,7 +713,7 @@
   .ctrl .when-paused{display:none}
   body.paused .ctrl .when-paused{display:inline}
   body.paused .ctrl .when-playing{display:none}
-  .lang{min-width:44px; justify-content:center}
+  .lang{min-width:40px; justify-content:center}
 
   /* ===== keyframes ===== */
   @keyframes beat{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.7)}}
@@ -780,17 +768,52 @@
 
   <section class="line" aria-label="The AI-native SDLC pipeline">
 
-    <!-- iterative loop labels -->
-    <div class="iter-label iter-spec-plan">
-      <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
-      <span data-nl="AI genereert, mens reviewt" data-en="AI generates, human reviews">AI generates, human reviews</span>
-    </div>
-    <div class="iter-label iter-execute">
-      <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
-      <span data-nl="Build · check · fix · repeat" data-en="Build · check · fix · repeat">Build · check · fix · repeat</span>
+    <!-- iterative loop labels — flex row mirroring station columns -->
+    <div class="iter-row">
+      <div class="iter-spacer" style="flex:1 1 0"></div><!-- s0 -->
+      <div class="iter-label" style="flex:3 1 0">
+        <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        <span data-nl="AI genereert, mens reviewt" data-en="AI generates, human reviews">AI generates, human reviews</span>
+      </div>
+      <div class="iter-label" style="flex:1.8 1 0">
+        <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        <span data-nl="Build · check · fix · repeat" data-en="Build · check · fix · repeat">Build · check · fix · repeat</span>
+      </div>
+      <div class="iter-spacer" style="flex:2 1 0"></div><!-- s5+s6 -->
     </div>
 
     <div class="stations">
+
+      <!-- 00 FORWARD DEPLOYED ENGINEER -->
+      <div class="station s0">
+        <div class="card">
+          <div class="fde-platform-badge" id="fdePlatformBadge" title="Plaetform">
+            <svg viewBox="0 0 24 24"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/></svg>
+            <span>Plaetform</span>
+          </div>
+          <div class="fde-inner">
+            <div class="fde-figures">
+              <svg class="fde-person" viewBox="0 0 36 36"><circle cx="18" cy="12" r="6"/><path d="M6 31c0-7 6-11 12-11s12 4 12 11" stroke-linecap="round"/></svg>
+              <svg class="fde-person business" viewBox="0 0 36 36"><circle cx="18" cy="12" r="6"/><path d="M6 31c0-7 6-11 12-11s12 4 12 11" stroke-linecap="round"/></svg>
+            </div>
+            <div class="fde-interact"><span class="fde-interact-dot"></span><span class="fde-interact-dot"></span><span class="fde-interact-dot"></span></div>
+            <div class="fde-protos">
+              <div class="fde-proto"><span class="fde-check">✗</span></div>
+              <div class="fde-proto"><span class="fde-check">✗</span></div>
+              <div class="fde-proto"><span class="fde-check">✓</span></div>
+            </div>
+            <div class="fde-arrow">
+              <span>Prototype</span>
+              <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="meta">
+          <div class="name" style="font-size:13px">Forward Deployed Engineer</div>
+          <div class="role" data-nl="Werkt samen met Business" data-en="Works with Business">Works with Business</div>
+        </div>
+        <div class="stub"></div>
+      </div>
 
       <!-- 01 SPEC -->
       <div class="station s1" tabindex="0">
@@ -933,27 +956,35 @@ BR-01 Member changes address</div>
     <!-- Plaetform living foundation -->
     <div class="foundation" id="foundation">
       <div class="found-header">
-        <div class="found-icon"><svg viewBox="0 0 24 24"><path d="M22 9V7h-2V5a2 2 0 00-2-2H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-2h2v-2h-2v-2h2v-2h-2V9h2zM18 19H4V5h14v14zm-4-8h-2v-2h-2v2H8v2h2v2h2v-2h2v-2z"/></svg></div>
+        <div class="found-icon"><svg viewBox="0 0 24 24"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/></svg></div>
         <span class="found-name">Plaetform</span>
         <div class="found-sep"></div>
         <span class="found-tagline" data-nl="Het technisch fundament" data-en="The technical foundation">The technical foundation</span>
       </div>
       <div class="found-zones">
-        <div class="found-zone fz-sandbox">
-          <div class="fz-label"><span class="fz-dot"></span><span class="fz-title">Sandbox</span></div>
-          <div class="fz-desc" data-nl="Spin apps op in <b>24–48u</b> voor experimenten en rapid prototyping. Daarna automatisch opgeruimd." data-en="Spin up apps in <b>24–48h</b> for experiments and rapid prototyping. Auto-cleaned afterwards." data-html>Spin up apps in <b>24–48h</b> for experiments and rapid prototyping. Auto-cleaned afterwards.</div>
+        <div class="found-group found-group-sandbox">
+          <div class="found-zone fz-sandbox">
+            <div class="fz-label"><span class="fz-dot"></span><span class="fz-title">Sandbox</span></div>
+            <div class="fz-desc" data-nl="De werkplek van de Forward Deployed Engineer. Spin up apps in <b>24–48u</b> voor experimenten, rapid prototyping en samenwerking met de business." data-en="Workspace for the Forward Deployed Engineer. Spin up apps in <b>24–48h</b> for experiments, rapid prototyping and business collaboration." data-html>Workspace for the Forward Deployed Engineer. Spin up apps in <b>24–48h</b> for experiments, rapid prototyping and business collaboration.</div>
+          </div>
         </div>
-        <div class="found-zone fz-dev">
-          <div class="fz-label"><span class="fz-dot"></span><span class="fz-title">Dev</span></div>
-          <div class="fz-desc" data-nl="Ontwikkelomgeving voor iteratief bouwen en testen." data-en="Development environment for iterative building and testing." data-html>Development environment for iterative building and testing.</div>
+        <div class="found-pipeline-link" id="foundPipelineLink" title="Show AI-native SDLC Pipeline">
+          <svg viewBox="0 0 24 24"><path d="M22 9V7h-2V5a2 2 0 00-2-2H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-2h2v-2h-2v-2h2v-2h-2V9h2zM18 19H4V5h14v14zm-4-8h-2v-2h-2v2H8v2h2v2h2v-2h2v-2z"/></svg>
+          <span class="found-pipeline-link-label" data-nl="Pipeline" data-en="Pipeline">Pipeline</span>
         </div>
-        <div class="found-zone fz-test">
-          <div class="fz-label"><span class="fz-dot"></span><span class="fz-title">Test</span></div>
-          <div class="fz-desc" data-nl="Validatie en acceptatie." data-en="Validation and acceptance." data-html>Validation and acceptance.</div>
-        </div>
-        <div class="found-zone fz-prod">
-          <div class="fz-label"><span class="fz-dot"></span><span class="fz-title">Prod</span></div>
-          <div class="fz-desc" data-nl="Productie — live en beheerd." data-en="Production — live and managed." data-html>Production — live and managed.</div>
+        <div class="found-group found-group-gates">
+          <div class="found-zone fz-dev">
+            <div class="fz-label"><span class="fz-dot"></span><span class="fz-title">Dev</span></div>
+            <div class="fz-desc" data-nl="Ontwikkelomgeving voor iteratief bouwen en testen." data-en="Development environment for iterative building and testing." data-html>Development environment for iterative building and testing.</div>
+          </div>
+          <div class="found-zone fz-test">
+            <div class="fz-label"><span class="fz-dot"></span><span class="fz-title">Test</span></div>
+            <div class="fz-desc" data-nl="Validatie en acceptatie." data-en="Validation and acceptance." data-html>Validation and acceptance.</div>
+          </div>
+          <div class="found-zone fz-prod">
+            <div class="fz-label"><span class="fz-dot"></span><span class="fz-title">Prod</span></div>
+            <div class="fz-desc" data-nl="Productie — live en beheerd." data-en="Production — live and managed." data-html>Production — live and managed.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -963,29 +994,16 @@ BR-01 Member changes address</div>
       
       <!-- Control Bar -->
       <div class="plumb-control-bar">
-        <div class="plumb-controls-group" style="width: 150px; flex-shrink: 0;">
-          <label class="plumb-switch-label">
-            <span class="plumb-switch">
-              <input type="checkbox" id="plumbGatesToggle" checked>
-              <span class="plumb-slider"></span>
-            </span>
-            <span data-nl="Human Gates" data-en="Human Gates">Human Gates</span>
-          </label>
+        <div class="plumb-controls-group" style="flex: 1;">
+          <span class="plumb-title-center">AI-native SDLC Pipeline</span>
         </div>
 
-        <div class="plumb-controls-group" style="width: 100px; justify-content: center; flex-shrink: 0;">
+        <div class="plumb-controls-group" style="flex-shrink: 0; justify-content: flex-end; gap: 8px;">
           <div class="plumb-stepper">
             <button class="plumb-btn" id="plumbPrev" aria-label="Previous step">◂</button>
             <div class="plumb-stepper-sep"></div>
             <button class="plumb-btn" id="plumbNext" aria-label="Next step">▸</button>
           </div>
-        </div>
-
-        <div class="plumb-controls-group" style="flex: 1; min-width: 200px; justify-content: center;">
-          <div class="plumb-step-display" id="plumbStepDisplay" data-nl="Stap 0 / 12: Selecteer" data-en="Step 0 / 12: Select">Step 0 / 12: Select</div>
-        </div>
-
-        <div class="plumb-controls-group" style="flex-shrink: 0; justify-content: flex-end; gap: 8px;">
           <button class="ctrl lang" id="plumbZoomOut" style="font-size: 13px; padding: 6px 12px;">−</button>
           <button class="ctrl" id="plumbZoomFit" style="font-size: 11px; padding: 6px 12px;" data-nl="Fit" data-en="Fit">Fit</button>
           <button class="ctrl lang" id="plumbZoomIn" style="font-size: 13px; padding: 6px 12px;">+</button>
@@ -1213,19 +1231,18 @@ BR-01 Member changes address</div>
     </div>
   </section>
 
-  <footer class="foot">
+</div>
 
-    <div class="controls">
-      <button class="ctrl" id="platformToggle" aria-label="Toon Plaetform" data-nl="Plaetform" data-en="Plaetform">Plaetform</button>
-      <button class="ctrl" id="plumbingToggle" aria-label="Toon Pipelines" data-nl="Plumbing" data-en="Plumbing">Plumbing</button>
-      <button class="ctrl lang" id="lang" aria-label="Taal wisselen / Switch language">NL</button>
-      <button class="ctrl" id="toggle" aria-label="Animatie pauzeren of afspelen">
-        <svg class="play-i" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
-        <svg class="pause-i" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        <span class="when-playing" data-nl="Pauze" data-en="Pause">Pause</span><span class="when-paused" data-nl="Afspelen" data-en="Play">Play</span>
-      </button>
-    </div>
-  </footer>
+<!-- Floating Controls Pill -->
+<div class="floating-controls">
+  <button class="ctrl" id="platformToggle" aria-label="Toon Plaetform" data-nl="Plaetform" data-en="Plaetform">Plaetform</button>
+  <button class="ctrl" id="plumbingToggle" aria-label="Toon Pipelines" data-nl="Plumbing" data-en="Plumbing">Plumbing</button>
+  <button class="ctrl lang" id="lang" aria-label="Taal wisselen / Switch language">NL</button>
+  <button class="ctrl" id="toggle" aria-label="Animatie pauzeren of afspelen">
+    <svg class="play-i" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+    <svg class="pause-i" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    <span class="when-playing" data-nl="Pauze" data-en="Pause">Pause</span><span class="when-paused" data-nl="Afspelen" data-en="Play">Play</span>
+  </button>
 </div>
 
 <script>
@@ -1419,11 +1436,6 @@ BR-01 Member changes address</div>
     // Refresh active step display text or show default
     if (currentStep > 0) {
       highlightStep(currentStep);
-    } else {
-      const displayEl = document.getElementById('plumbStepDisplay');
-      if (displayEl) {
-        displayEl.textContent = lang === 'nl' ? 'Stap 0 / 12: Selecteer' : 'Step 0 / 12: Select';
-      }
     }
   }
 
@@ -1455,6 +1467,27 @@ BR-01 Member changes address</div>
     }
   });
 
+  // Pipeline link in Plaetform foundation toggles plumbing
+  const pipelineLink = document.getElementById('foundPipelineLink');
+  if (pipelineLink) {
+    pipelineLink.addEventListener('click', () => {
+      body.classList.toggle('show-plumbing');
+      plumbingToggle.classList.toggle('active', body.classList.contains('show-plumbing'));
+      if (body.classList.contains('show-plumbing')) {
+        setTimeout(zoomFit, 100);
+      }
+    });
+  }
+
+  // FDE platform badge toggles Plaetform layer
+  const fdePlatformBadge = document.getElementById('fdePlatformBadge');
+  if (fdePlatformBadge) {
+    fdePlatformBadge.addEventListener('click', () => {
+      body.classList.toggle('show-platform');
+      platformToggle.classList.toggle('active', body.classList.contains('show-platform'));
+    });
+  }
+
   document.addEventListener('keydown', e=>{
     if(e.key==='Escape') stations.forEach(x=>x.classList.remove('pinned'));
     if(e.code==='Space' && e.target===body){ e.preventDefault(); body.classList.toggle('paused'); }
@@ -1470,28 +1503,11 @@ BR-01 Member changes address</div>
 
   function getNextStepIndex(current, direction) {
     let next = current + direction;
-    const hideGates = !document.getElementById('plumbGatesToggle').checked;
     
-    while (next >= 1 && next <= PIPELINE_STEPS.length) {
-      if (hideGates && PIPELINE_STEPS[next - 1].isGate) {
-        next += direction;
-      } else {
-        return next;
-      }
-    }
+    if (next > PIPELINE_STEPS.length) next = 1;
+    if (next < 1) next = PIPELINE_STEPS.length;
     
-    // Wrap around
-    if (next > PIPELINE_STEPS.length) {
-      for (let i = 1; i <= PIPELINE_STEPS.length; i++) {
-        if (!hideGates || !PIPELINE_STEPS[i - 1].isGate) return i;
-      }
-    }
-    if (next < 1) {
-      for (let i = PIPELINE_STEPS.length; i >= 1; i--) {
-        if (!hideGates || !PIPELINE_STEPS[i - 1].isGate) return i;
-      }
-    }
-    return 1;
+    return next;
   }
 
   function highlightStep(stepIndex) {
@@ -1503,14 +1519,12 @@ BR-01 Member changes address</div>
     const step = PIPELINE_STEPS[stepIndex - 1];
     if (!step) return;
 
-    const hideGates = !document.getElementById('plumbGatesToggle').checked;
-
     // Highlight nodes
     document.querySelectorAll('.fn-node').forEach(n => {
       const isCoreNode = step.nodes.includes(n.id);
       const isGateNode = step.gateNodes && step.gateNodes.includes(n.id);
       
-      if (isCoreNode || (!hideGates && isGateNode)) {
+      if (isCoreNode || isGateNode) {
         n.classList.add('active-step');
         n.classList.remove('dimmed');
       } else {
@@ -1535,13 +1549,8 @@ BR-01 Member changes address</div>
       }
     });
 
-    // Update display text
-    const displayEl = document.getElementById('plumbStepDisplay');
-    const stepLabel = lang === 'nl' ? 'Stap' : 'Step';
-    const stepTitle = lang === 'nl' ? step.titleNl : step.titleEn;
-    displayEl.textContent = `${stepLabel} ${stepIndex} / 12: ${stepTitle}`;
-
     // Update description card
+    const stepTitle = lang === 'nl' ? step.titleNl : step.titleEn;
     const card = document.getElementById('plumbDescCard');
     card.style.borderTop = '4px solid ' + step.color;
     document.getElementById('plumbDescStep').textContent = (lang === 'nl' ? 'STAP ' : 'STEP ') + stepIndex;
@@ -1553,13 +1562,11 @@ BR-01 Member changes address</div>
     const step = PIPELINE_STEPS[stepIndex - 1];
     if (!step) return;
 
-    const hideGates = !document.getElementById('plumbGatesToggle').checked;
-
     // Temporarily highlight nodes
     document.querySelectorAll('.fn-node').forEach(n => {
       const isCoreNode = step.nodes.includes(n.id);
       const isGateNode = step.gateNodes && step.gateNodes.includes(n.id);
-      if (isCoreNode || (!hideGates && isGateNode)) {
+      if (isCoreNode || isGateNode) {
         n.classList.add('active-step');
         n.classList.remove('dimmed');
       } else {
@@ -1610,9 +1617,6 @@ BR-01 Member changes address</div>
       document.getElementById('plumbDescStep').textContent = 'INFO';
       document.getElementById('plumbDescTitle').textContent = lang === 'nl' ? WELCOME_STEP.titleNl : WELCOME_STEP.titleEn;
       document.getElementById('plumbDescText').textContent = lang === 'nl' ? WELCOME_STEP.descNl : WELCOME_STEP.descEn;
-      
-      const displayEl = document.getElementById('plumbStepDisplay');
-      displayEl.textContent = lang === 'nl' ? 'Stap 0 / 12: Selecteer' : 'Step 0 / 12: Select';
     }
   }
 
@@ -1657,8 +1661,6 @@ BR-01 Member changes address</div>
     node.addEventListener('click', () => {
       const stepIdx = nodeToStepIndex[node.id];
       if (stepIdx) {
-        const hideGates = !document.getElementById('plumbGatesToggle').checked;
-        if (hideGates && PIPELINE_STEPS[stepIdx - 1].isGate) return;
         currentStep = stepIdx;
         highlightStep(currentStep);
       }
@@ -1674,20 +1676,6 @@ BR-01 Member changes address</div>
   document.getElementById('plumbNext').addEventListener('click', () => {
     currentStep = getNextStepIndex(currentStep, 1);
     highlightStep(currentStep);
-  });
-
-  // Gates Toggle
-  document.getElementById('plumbGatesToggle').addEventListener('change', (e) => {
-    const hideGates = !e.target.checked;
-    if (hideGates) {
-      body.classList.add('hide-plumb-gates');
-      if (currentStep > 0 && PIPELINE_STEPS[currentStep - 1].isGate) {
-        currentStep = getNextStepIndex(currentStep, 1);
-        highlightStep(currentStep);
-      }
-    } else {
-      body.classList.remove('hide-plumb-gates');
-    }
   });
 
   // Zoom management
